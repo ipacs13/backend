@@ -6,6 +6,7 @@ use App\Models\Product;
 Route::get('/products', function () {
     return response()->json([
         'products' => Product::all(),
-        'message' => 'Products fetched successfully'
+        'message' => 'Products fetched successfully',
+        //nag edit ko dani dapit
     ]);
 });
