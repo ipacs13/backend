@@ -11,4 +11,15 @@ class ProductService
     {
         return Product::all();
     }
+
+    public function createProduct(array $data): Product
+    {
+        return Product::create($data);
+    }
+
+    public function updateProduct(Product $product, array $data): Product
+    {
+        $product->update($data);
+        return $product;
+    }
 }

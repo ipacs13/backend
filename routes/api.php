@@ -18,6 +18,12 @@ Route::prefix('v1')->group(function () {
     Route::middleware('auth:api')->group(function () {
         Route::prefix('products')->group(function () {
             Route::get('/', [ProductController::class, 'index']);
+            Route::post('/', [ProductController::class, 'store']);
+            Route::prefix('{product}')->group(function () {
+                Route::get('/', [ProductController::class, 'show']);
+                Route::put('/', [ProductController::class, 'update']);
+                Route::delete('/', [ProductController::class, 'destroy']);
+            });
         });
     });
 });
