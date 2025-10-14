@@ -6,8 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-use App\Models\User;
-use Illuminate\Support\Facades\Http;
+use App\Http\Resources\User\UserResource;
 
 class AuthController extends Controller
 {
@@ -56,6 +55,10 @@ class AuthController extends Controller
 
     public function user(Request $request)
     {
-        return response()->json($request->user());
+        try {
+            return new UserResource($request->user());
+        } catch (\Exception $e) {
+            return $this->respondWithError($e->getMessage());
+        }
     }
 }
