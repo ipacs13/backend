@@ -7,6 +7,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\User\UserResource;
+use App\Models\User;
+use App\Http\Requests\User\RegisterUserRequest;
+use App\Models\Role;
+use App\Events\UserLogin;
 
 class AuthController extends Controller
 {
@@ -27,6 +31,8 @@ class AuthController extends Controller
                 $user = Auth::user();
 
                 $token = $user->createToken('API Token')->accessToken;
+
+                event(new UserLogin($user));
 
                 return response()->json([
                     'access_token' => $token,
@@ -59,6 +65,18 @@ class AuthController extends Controller
             return new UserResource($request->user());
         } catch (\Exception $e) {
             return $this->respondWithError($e->getMessage());
+        }
+    }
+
+    public function register(RegisterUserRequest $request)
+    {
+        try {
+            $user = User::create($request->validated());
+            $user->assignRole(Role::ROLE_USER);
+
+            return response()->json(['message' => 'User registered successfully'], 201);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 }
