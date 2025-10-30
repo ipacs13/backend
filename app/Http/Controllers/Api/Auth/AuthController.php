@@ -30,15 +30,16 @@ class AuthController extends Controller
             if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
                 $user = Auth::user();
 
-                $token = $user->createToken('API Token')->accessToken;
+                $accessToken = $user->createToken('API Token')->accessToken;
+                $refreshToken = $user->createToken('Refresh Token')->accessToken;
 
                 event(new UserLogin($user));
 
                 return response()->json([
-                    'access_token' => $token,
+                    'access_token' => $accessToken,
+                    'refresh_token' => $refreshToken,
                     'token_type' => 'Bearer',
                     'expires_in' => 3600,
-                    'user' => new UserResource($user),
                 ]);
             }
 

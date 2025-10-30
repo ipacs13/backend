@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Product;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 
 class ProductService
 {
@@ -12,11 +13,20 @@ class ProductService
     {
         $page = request()->get('page');
         $perPage = request()->get('per_page', 10);
+        $search = request()->get('search');
+
+        $query = Product::query();
+
+        $query->when($search, function ($query, $search) {
+            $needle = strtolower($search);
+            return $query->whereRaw('LOWER(name) LIKE ?', ['%' . $needle . '%'])
+                ->orWhereRaw('LOWER(description) LIKE ?', ['%' . $needle . '%']);
+        });
 
         if ($page) {
-            return Product::paginate($perPage, ['*'], 'page', $page);
+            return $query->paginate($perPage, ['*'], 'page', $page);
         } else {
-            return Product::all();
+            return $query->get();
         }
     }
 
@@ -27,7 +37,14 @@ class ProductService
 
     public function updateProduct(Product $product, array $data): Product
     {
-        $product->update($data);
-        return $product;
+        DB::beginTransaction();
+        try {
+            $product->update($data);
+            DB::commit();
+            return $product;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
     }
 }

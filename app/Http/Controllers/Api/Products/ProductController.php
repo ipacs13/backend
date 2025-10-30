@@ -17,6 +17,7 @@ class ProductController extends ApiController
     public function __construct(protected ProductService $service) {}
 
     private $fields = [
+        'name',
         'description',
     ];
 
