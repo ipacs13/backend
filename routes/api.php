@@ -13,9 +13,7 @@ Route::prefix('v1')->group(function () {
         //Tanan API nga need mo login ang user dapat ibutang dani
         Route::middleware('auth:api')->group(function () {
             Route::post('/logout', [AuthController::class, 'logout']);
-            Route::get('/user', [AuthController::class, 'user'])
-                ->middleware('role:User|Admin');
-            // ->middleware('permission:user.create.user'); //or pwede pud ani :D
+            Route::get('/user', [AuthController::class, 'user']);
         });
     });
 
