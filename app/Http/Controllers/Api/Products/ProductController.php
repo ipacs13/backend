@@ -6,6 +6,7 @@ use App\Http\Controllers\ApiController;
 use App\Http\Resources\Products\ProductCollection;
 use App\Http\Resources\Products\ProductResource;
 use App\Services\ProductService;
+use App\Services\UserService;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\Product\StoreProductRequest;
@@ -14,11 +15,15 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
 use App\Exports\ProductExport;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Http\Requests\User\UploadUserSignatureRequest;
 
 class ProductController extends ApiController
 {
 
-    public function __construct(protected ProductService $service) {}
+    public function __construct(
+        protected ProductService $service,
+        protected UserService $userService
+    ) {}
 
     private $fields = [
         'name',

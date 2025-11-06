@@ -28,7 +28,8 @@ class UserResource extends JsonResource
             'id' => $this->id,
             'attributes' => [
                 'name' => $this->name,
-                'email' => $this->email
+                'email' => $this->email,
+                'signature' => $this->signature ? asset('storage/' . $this->signature) : null,
             ],
             'relationships' => [
                 'addresses' => UserAddressResource::collection($this->addresses),

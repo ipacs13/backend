@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\Products\ProductController;
 use App\Http\Controllers\Api\Otp\OtpController;
+use App\Http\Controllers\Api\User\UserController;
 
 Route::prefix('v1')->group(function () {
     Route::prefix('auth')->group(function () {
@@ -14,6 +15,7 @@ Route::prefix('v1')->group(function () {
         Route::middleware('auth:api')->group(function () {
             Route::post('/logout', [AuthController::class, 'logout']);
             Route::get('/user', [AuthController::class, 'user']);
+            Route::post('/signature', [UserController::class, 'uploadSignature']);
         });
     });
 
