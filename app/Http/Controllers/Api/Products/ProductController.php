@@ -10,6 +10,10 @@ use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Storage;
+use App\Exports\ProductExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ProductController extends ApiController
 {
@@ -65,6 +69,49 @@ class ProductController extends ApiController
         try {
             $product->delete();
             return $this->respondSuccess(["message" => "Product deleted successfully"]);
+        } catch (\Exception $e) {
+            return $this->respondWithError($e->getMessage());
+        }
+    }
+
+    public function exportPdf()
+    {
+        try {
+
+            $products = $this->service->getAllProducts();
+
+            $pdf = Pdf::loadView('pdf.products', ['products' => $products]);
+
+            // Generate unique filename with timestamp
+            $filename = 'products_' . now()->format('Y-m-d_His') . '.pdf';
+
+            // Save PDF to public storage
+            Storage::disk('public')->put('exports/' . $filename, $pdf->output());
+
+            // Generate download URL
+            $downloadUrl = asset('storage/exports/' . $filename);
+
+            return $this->respondSuccess([
+                'message' => 'PDF exported successfully',
+                'download_url' => $downloadUrl,
+                'filename' => $filename
+            ]);
+        } catch (\Exception $e) {
+            return $this->respondWithError($e->getMessage());
+        }
+    }
+
+    public function exportExcel()
+    {
+        try {
+            $products = $this->service->getAllProducts();
+            $filename = 'products_' . now()->format('Y-m-d_His') . '.xlsx';
+            Excel::store(new ProductExport($products), 'exports/' . $filename, 'public');
+            return $this->respondSuccess([
+                'message' => 'PDF exported successfully',
+                'download_url' => asset('storage/exports/' . $filename),
+                'filename' => $filename
+            ]);
         } catch (\Exception $e) {
             return $this->respondWithError($e->getMessage());
         }
