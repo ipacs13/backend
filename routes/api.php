@@ -21,6 +21,12 @@ Route::prefix('v1')->group(function () {
         Route::prefix('products')->group(function () {
             Route::get('/', [ProductController::class, 'index']);
             Route::post('/', [ProductController::class, 'store']);
+
+            Route::prefix('export')->group(function () {
+                Route::get('/pdf', [ProductController::class, 'exportPdf']);
+                Route::get('/excel', [ProductController::class, 'exportExcel']);
+            });
+
             Route::prefix('{product}')->group(function () {
                 Route::get('/', [ProductController::class, 'show']);
                 Route::put('/', [ProductController::class, 'update']);
