@@ -3,6 +3,8 @@
 namespace App\Listeners;
 
 use App\Events\UserLogin;
+use App\Events\UserRegistered;
+use App\Jobs\NotifyAdminNewUserRegistered;
 
 class UserEventListener
 {
@@ -19,6 +21,11 @@ class UserEventListener
             ->log(self::ENTITY . ' logged in');
     }
 
+    public function onUserRegistered($event)
+    {
+        NotifyAdminNewUserRegistered::dispatch($event->user);
+    }
+
     /**
      * Register the listeners for the subscriber.
      */
@@ -27,6 +34,11 @@ class UserEventListener
         $events->listen(
             UserLogin::class,
             self::class . '@onUserLogin'
+        );
+
+        $events->listen(
+            UserRegistered::class,
+            self::class . '@onUserRegistered'
         );
     }
 }

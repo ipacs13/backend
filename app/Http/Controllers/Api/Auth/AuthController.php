@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Http\Requests\User\RegisterUserRequest;
 use App\Models\Role;
 use App\Events\UserLogin;
+use App\Events\UserRegistered;
 
 class AuthController extends Controller
 {
@@ -70,6 +71,8 @@ class AuthController extends Controller
         try {
             $user = User::create($request->validated());
             $user->assignRole(Role::ROLE_USER);
+
+            event(new UserRegistered($user));
 
             return response()->json(['message' => 'User registered successfully'], 201);
         } catch (\Exception $e) {
