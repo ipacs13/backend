@@ -17,7 +17,7 @@ return new class extends Migration
         $driver = DB::getDriverName();
 
         // Create table using Laravel Schema Builder (database-agnostic)
-        Schema::create('plan_type', function (Blueprint $table) use ($driver) {
+        Schema::create('plan_types', function (Blueprint $table) use ($driver) {
             $table->id();
             $table->string('code');
             $table->string('name');
@@ -89,7 +89,7 @@ return new class extends Migration
 
             // Insert data using database-agnostic method
             if (!empty($data)) {
-                DB::table('plan_type')->insert($data);
+                DB::table('plan_types')->insert($data);
             }
         }
 
@@ -97,10 +97,10 @@ return new class extends Migration
         $driver = DB::getDriverName();
         if ($driver === 'pgsql') {
             // PostgreSQL: Set the sequence to start from 4
-            DB::statement("SELECT setval('plan_type_id_seq', 3, true)");
+            DB::statement("SELECT setval('plan_types_id_seq', 3, true)");
         } elseif ($driver === 'mysql' || $driver === 'mariadb') {
             // MySQL: Set AUTO_INCREMENT to 4
-            DB::statement('ALTER TABLE plan_type AUTO_INCREMENT = 4');
+            DB::statement('ALTER TABLE plan_types AUTO_INCREMENT = 4');
         }
     }
 
@@ -109,6 +109,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('plan_type');
+        Schema::dropIfExists('plan_types');
     }
 };
