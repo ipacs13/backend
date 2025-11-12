@@ -12,12 +12,14 @@ use Laravel\Passport\HasApiTokens;
 
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Permission\Traits\HasRoles;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
 
-class User extends Authenticatable implements OAuthenticatable
+class User extends Authenticatable implements OAuthenticatable, HasMedia
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasApiTokens, HasRoles;
+    use HasFactory, Notifiable, HasApiTokens, HasRoles, InteractsWithMedia;
 
     /**
      * The attributes that are mass assignable.
@@ -60,5 +62,15 @@ class User extends Authenticatable implements OAuthenticatable
     public function addresses(): HasMany
     {
         return $this->hasMany(UserAddress::class);
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('signature')
+            ->singleFile()
+            ->useDisk('s3');
+        $this->addMediaCollection('avatar')
+            ->singleFile()
+            ->useDisk('s3');
     }
 }

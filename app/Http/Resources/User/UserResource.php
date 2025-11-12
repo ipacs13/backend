@@ -29,7 +29,8 @@ class UserResource extends JsonResource
             'attributes' => [
                 'name' => $this->name,
                 'email' => $this->email,
-                'signature' => $this->signature ? asset('storage/' . $this->signature) : null,
+                'signature' => $this->getFirstTemporaryUrl(now()->addMinutes(5), 'signature', 's3'),
+                'avatar' => $this->getFirstTemporaryUrl(now()->addMinutes(5), 'avatar', 's3'),
             ],
             'relationships' => [
                 'addresses' => UserAddressResource::collection($this->addresses),

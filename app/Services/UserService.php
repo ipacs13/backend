@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use App\Models\User;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 
 class UserService
 {
@@ -33,22 +33,26 @@ class UserService
 
         $randomFilename = Str::random(40) . '.' . $imageType;
 
-        $folderPath = $user->id . '/signature';
-
-        if (!Storage::disk('public')->exists($folderPath)) {
-            Storage::disk('public')->makeDirectory($folderPath);
-        }
-
-        Storage::disk('public')->put($folderPath . '/' . $randomFilename, $imageData);
-
-        $user->signature = $randomFilename;
-        $user->save();
-
-        $url = asset('storage/' . $folderPath . '/' . $randomFilename);
+        $user->addMediaFromBase64($base64Data)
+            ->usingFileName($randomFilename)
+            ->toMediaCollection('signature', 's3');
 
         return [
             'message' => 'Signature uploaded successfully',
-            'url' => $url,
+            'url' => $user->getFirstTemporaryUrl(now()->addMinutes(5), 'signature', 's3'),
+            'filename' => $user->getFirstMediaUrl('signature', 's3'),
+        ];
+    }
+
+    public function uploadAvatar(User $user, array $data = []): array
+    {
+        $randomFilename = Str::random(40) . '.' . $data['avatar']->getClientOriginalExtension();
+
+        $user->addMedia($data['avatar'])->toMediaCollection('avatar', 's3');
+
+        return [
+            'message' => 'Avatar uploaded successfully',
+            'url' => $user->getFirstTemporaryUrl(now()->addMinutes(5), 'avatar', 's3'),
             'filename' => $randomFilename,
         ];
     }

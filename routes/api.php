@@ -16,6 +16,7 @@ Route::prefix('v1')->group(function () {
             Route::post('/logout', [AuthController::class, 'logout']);
             Route::get('/user', [AuthController::class, 'user']);
             Route::post('/signature', [UserController::class, 'uploadSignature']);
+            Route::post('/avatar', [UserController::class, 'uploadAvatar']);
         });
     });
 
